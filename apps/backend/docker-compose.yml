@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  dev-postgres:
+    image: postgres:14.4-alpine
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: runmie
+      POSTGRES_PASSWORD: runmie
+      POSTGRES_DB: runmie
+    restart: always
+    networks:
+      - runmie
+networks:
+  runmie:
