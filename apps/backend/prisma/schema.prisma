@@ -13,104 +13,111 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ユーザー
 model User {
-  id   String @id @default(cuid()) @db.Char(25)
-  name String @db.VarChar(100)
-
+  id               String            @id @default(cuid()) @db.Char(25)
+  name             String            @db.VarChar(30)
   challengeMembers ChallengeMember[]
   activities       Activity[]
   messages         Message[]
-  createdAt        DateTime          @default(now()) @db.Timestamp
-  updatedAt        DateTime          @updatedAt @db.Timestamp
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamp
+
+  @@map("users")
 }
 
-// チャレンジ（マラソン大会などの具体的な目標）
-model Challenge {
-  id          String   @id @default(cuid()) @db.Char(25)
-  name        String   @db.VarChar(100) // 例：「東京マラソン2025」
-  description String?  @db.Text
-  targetDate  DateTime @db.Date // 大会開催日
-  type        String   @db.VarChar(50) // 'marathon', 'ultra-marathon' など
-  status      String   @db.VarChar(20) // 'active' or 'completed'
+enum ChallengeStatus {
+  draft
+  active
+  completed
 
-  processId  String            @db.Char(25) // プロセスへの参照
+  @@map("challenge_statuses")
+}
+
+model Challenge {
+  id          String          @id @default(cuid()) @db.Char(25)
+  name        String          @db.VarChar(100)
+  description String?         @db.Text
+  targetDate  DateTime        @map("target_date") @db.Date
+  status      ChallengeStatus @default(active)
+
+  processId  String            @map("process_id") @db.Char(25)
   process    ChallengeProcess  @relation(fields: [processId], references: [id])
   members    ChallengeMember[]
   activities Activity[]
-  createdAt  DateTime          @default(now()) @db.Timestamp
-  updatedAt  DateTime          @updatedAt @db.Timestamp
+  createdAt  DateTime          @default(now()) @map("created_at") @db.Timestamp
+  updatedAt  DateTime          @updatedAt @map("updated_at") @db.Timestamp
 
   @@unique([processId])
   @@index([processId])
+  @@map("challenges")
 }
 
-// チャレンジへの過程（プロセス）
 model ChallengeProcess {
-  id String @id @default(cuid()) @db.Char(25)
+  id        String     @id @default(cuid()) @db.Char(25)
+  challenge Challenge?
+  messages  Message[]
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp
+  updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp
 
-  challenge Challenge? // チャレンジへの逆参照（1対1）
-  messages  Message[] // このプロセス上のメッセージ（1対多）
-  createdAt DateTime   @default(now()) @db.Timestamp
+  @@map("challenge_processes")
+}
+
+model ChallengeMember {
+  id          String    @id @default(cuid()) @db.Char(25)
+  userId      String    @map("user_id") @db.Char(25)
+  challengeId String    @map("challenge_id") @db.Char(25)
+  role        Role      @default(member)
+  user        User      @relation(fields: [userId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp
+
+  @@unique([userId, challengeId])
+  @@index([challengeId])
+  @@map("challenge_members")
+}
+
+model Activity {
+  id          String    @id @default(cuid()) @db.Char(25)
+  userId      String    @map("user_id") @db.Char(25)
+  challengeId String    @map("challenge_id") @db.Char(25)
+  distance    Int       @db.Integer
+  duration    Int       @db.Integer
+  date        DateTime  @db.Timestamp
+  notes       String?   @db.Text
+  imageUrl    String?   @map("image_url") @db.VarChar(255)
+  user        User      @relation(fields: [userId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  messages    Message[]
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp
+
+  @@index([userId])
+  @@index([challengeId])
+  @@map("activities")
+}
+
+model Message {
+  id         String           @id @default(cuid()) @db.Char(25)
+  content    String           @db.Text
+  userId     String           @map("user_id") @db.Char(25)
+  processId  String           @map("process_id") @db.Char(25)
+  activityId String?          @map("activity_id") @db.Char(25)
+  user       User             @relation(fields: [userId], references: [id])
+  process    ChallengeProcess @relation(fields: [processId], references: [id])
+  activity   Activity?        @relation(fields: [activityId], references: [id])
+  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamp
+  updatedAt  DateTime         @updatedAt @map("updated_at") @db.Timestamp
+
+  @@index([userId])
+  @@index([processId])
+  @@index([activityId])
+  @@map("messages")
 }
 
 enum Role {
   admin
   member
-}
 
-// チャレンジメンバー（ユーザーとチャレンジの中間テーブル）
-model ChallengeMember {
-  id          String @id @default(cuid()) @db.Char(25)
-  userId      String @db.Char(25)
-  challengeId String @db.Char(25)
-  role        Role   @default(member)
-
-  user      User      @relation(fields: [userId], references: [id])
-  challenge Challenge @relation(fields: [challengeId], references: [id])
-  createdAt DateTime  @default(now()) @db.Timestamp
-
-  @@unique([userId, challengeId])
-  @@index([challengeId])
-}
-
-// 活動記録
-model Activity {
-  id          String   @id @default(cuid()) @db.Char(25)
-  userId      String   @db.Char(25)
-  challengeId String   @db.Char(25)
-  distance    Int      @db.Integer // meters単位
-  duration    Int      @db.Integer // seconds単位
-  date        DateTime @db.Timestamp
-  notes       String?  @db.Text
-  imageUrl    String?  @db.VarChar(255)
-
-  user      User      @relation(fields: [userId], references: [id])
-  challenge Challenge @relation(fields: [challengeId], references: [id])
-  messages  Message[] // この活動に対するメッセージ
-
-  createdAt DateTime @default(now()) @db.Timestamp
-  updatedAt DateTime @updatedAt @db.Timestamp
-
-  @@index([userId])
-  @@index([challengeId])
-}
-
-// メッセージ（旧Comment）
-model Message {
-  id         String  @id @default(cuid()) @db.Char(25)
-  content    String  @db.Text
-  userId     String  @db.Char(25)
-  processId  String  @db.Char(25) // 必須：どのプロセス上のメッセージか
-  activityId String? @db.Char(25) // オプション：特定の活動に対するメッセージの場合
-
-  user     User             @relation(fields: [userId], references: [id])
-  process  ChallengeProcess @relation(fields: [processId], references: [id])
-  activity Activity?        @relation(fields: [activityId], references: [id])
-
-  createdAt DateTime @default(now()) @db.Timestamp
-
-  @@index([userId])
-  @@index([processId])
-  @@index([activityId])
+  @@map("roles")
 }
