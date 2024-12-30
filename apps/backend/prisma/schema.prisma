@@ -14,13 +14,13 @@ datasource db {
 }
 
 model User {
-  id               String            @id @default(cuid()) @db.Char(25)
-  name             String            @db.VarChar(30)
+  id               String                     @id @default(cuid()) @db.Char(25)
+  name             String                     @db.VarChar(30)
   challengeMembers ChallengeMember[]
-  activities       Activity[]
-  messages         Message[]
-  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp
-  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamp
+  activities       ChallengeProcessActivity[]
+  messages         ChallengeProcessMessage[]
+  createdAt        DateTime                   @default(now()) @map("created_at") @db.Timestamp
+  updatedAt        DateTime                   @updatedAt @map("updated_at") @db.Timestamp
 
   @@map("users")
 }
@@ -40,84 +40,84 @@ model Challenge {
   targetDate  DateTime        @map("target_date") @db.Date
   status      ChallengeStatus @default(active)
 
-  processId  String            @map("process_id") @db.Char(25)
-  process    ChallengeProcess  @relation(fields: [processId], references: [id])
-  members    ChallengeMember[]
-  activities Activity[]
-  createdAt  DateTime          @default(now()) @map("created_at") @db.Timestamp
-  updatedAt  DateTime          @updatedAt @map("updated_at") @db.Timestamp
+  members          ChallengeMember[]
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamp
+  challengeProcess ChallengeProcess?
 
-  @@unique([processId])
-  @@index([processId])
   @@map("challenges")
 }
 
 model ChallengeProcess {
-  id        String     @id @default(cuid()) @db.Char(25)
-  challenge Challenge?
-  messages  Message[]
-  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp
-  updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp
+  challengeId String                     @id @map("challenge_id") @db.Char(25)
+  challenge   Challenge                  @relation(fields: [challengeId], references: [id])
+  messages    ChallengeProcessMessage[]
+  createdAt   DateTime                   @default(now()) @map("created_at") @db.Timestamp
+  updatedAt   DateTime                   @updatedAt @map("updated_at") @db.Timestamp
+  activities  ChallengeProcessActivity[]
 
+  @@unique([challengeId])
   @@map("challenge_processes")
 }
 
-model ChallengeMember {
-  id          String    @id @default(cuid()) @db.Char(25)
-  userId      String    @map("user_id") @db.Char(25)
-  challengeId String    @map("challenge_id") @db.Char(25)
-  role        Role      @default(member)
-  user        User      @relation(fields: [userId], references: [id])
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
-  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp
-  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp
+enum ChallengeMemberRole {
+  admin
+  member
 
-  @@unique([userId, challengeId])
-  @@index([challengeId])
+  @@map("roles")
+}
+
+model ChallengeMember {
+  userId      String                     @map("user_id") @db.Char(25)
+  challengeId String                     @map("challenge_id") @db.Char(25)
+  role        ChallengeMemberRole        @default(member)
+  user        User                       @relation(fields: [userId], references: [id])
+  challenge   Challenge                  @relation(fields: [challengeId], references: [id])
+  createdAt   DateTime                   @default(now()) @map("created_at") @db.Timestamp
+  updatedAt   DateTime                   @updatedAt @map("updated_at") @db.Timestamp
+  activities  ChallengeProcessActivity[]
+  messages    ChallengeProcessMessage[]
+
+  @@id([userId, challengeId])
   @@map("challenge_members")
 }
 
-model Activity {
-  id          String    @id @default(cuid()) @db.Char(25)
-  userId      String    @map("user_id") @db.Char(25)
-  challengeId String    @map("challenge_id") @db.Char(25)
-  distance    Int       @db.Integer
-  duration    Int       @db.Integer
-  date        DateTime  @db.Timestamp
-  notes       String?   @db.Text
-  imageUrl    String?   @map("image_url") @db.VarChar(255)
-  user        User      @relation(fields: [userId], references: [id])
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
-  messages    Message[]
-  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp
-  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp
+model ChallengeProcessActivity {
+  id          String                    @id @default(cuid()) @db.Char(25)
+  userId      String                    @map("user_id") @db.Char(25)
+  challengeId String                    @map("challenge_id") @db.Char(25)
+  distance    Int                       @db.Integer
+  duration    Int                       @db.Integer
+  date        DateTime                  @db.Timestamp
+  notes       String?                   @db.Text
+  imageUrl    String?                   @map("image_url") @db.VarChar(255)
+  member      ChallengeMember           @relation(fields: [userId, challengeId], references: [userId, challengeId])
+  process     ChallengeProcess          @relation(fields: [challengeId], references: [challengeId])
+  messages    ChallengeProcessMessage[]
+  createdAt   DateTime                  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt   DateTime                  @updatedAt @map("updated_at") @db.Timestamp
+  user        User                      @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([challengeId])
   @@map("activities")
 }
 
-model Message {
-  id         String           @id @default(cuid()) @db.Char(25)
-  content    String           @db.Text
-  userId     String           @map("user_id") @db.Char(25)
-  processId  String           @map("process_id") @db.Char(25)
-  activityId String?          @map("activity_id") @db.Char(25)
-  user       User             @relation(fields: [userId], references: [id])
-  process    ChallengeProcess @relation(fields: [processId], references: [id])
-  activity   Activity?        @relation(fields: [activityId], references: [id])
-  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamp
-  updatedAt  DateTime         @updatedAt @map("updated_at") @db.Timestamp
+model ChallengeProcessMessage {
+  id          String                    @id @default(cuid()) @db.Char(25)
+  content     String                    @db.Text
+  userId      String                    @map("user_id") @db.Char(25)
+  challengeId String                    @map("challenge_id") @db.Char(25)
+  activityId  String?                   @map("activity_id") @db.Char(25)
+  member      ChallengeMember           @relation(fields: [userId, challengeId], references: [userId, challengeId])
+  user        User                      @relation(fields: [userId], references: [id])
+  process     ChallengeProcess          @relation(fields: [challengeId], references: [challengeId])
+  activity    ChallengeProcessActivity? @relation(fields: [activityId], references: [id])
+  createdAt   DateTime                  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt   DateTime                  @updatedAt @map("updated_at") @db.Timestamp
 
   @@index([userId])
-  @@index([processId])
+  @@index([challengeId])
   @@index([activityId])
-  @@map("messages")
-}
-
-enum Role {
-  admin
-  member
-
-  @@map("roles")
+  @@map("challenge_process_messages")
 }
