@@ -1,11 +1,8 @@
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
 export class User {
   id: string | undefined;
   name: string;
 
-  constructor(params: { id?: string; name: string }) {
+  private constructor(params: { id?: string; name: string }) {
     this.id = params.id;
     this.name = params.name;
   }

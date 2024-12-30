@@ -35,7 +35,7 @@ enum ChallengeStatus {
 
 model Challenge {
   id          String          @id @default(cuid()) @db.Char(25)
-  name        String          @db.VarChar(100)
+  title       String          @db.VarChar(100)
   description String?         @db.Text
   targetDate  DateTime        @map("target_date") @db.Date
   status      ChallengeStatus @default(active)
