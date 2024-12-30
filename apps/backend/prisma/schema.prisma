@@ -13,98 +13,104 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ユーザーモデル
+// ユーザー
 model User {
-  id         String        @id @default(cuid()) @db.Char(25)
-  name       String        @unique @db.VarChar(30)
-  groups     GroupMember[]
-  activities Activity[]
-  // comments   Comment[]
-  // likes      Like[]
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  id   String @id @default(cuid()) @db.Char(25)
+  name String @db.VarChar(100)
+
+  challengeMembers ChallengeMember[]
+  activities       Activity[]
+  messages         Message[]
+  createdAt        DateTime          @default(now()) @db.Timestamp
+  updatedAt        DateTime          @updatedAt @db.Timestamp
 }
 
-// グループモデル
-model Group {
-  id          String        @id @default(cuid()) @db.Char(25)
-  name        String        @db.VarChar(80)
-  description String?
-  members     GroupMember[]
-  goals       Goal[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+// チャレンジ（マラソン大会などの具体的な目標）
+model Challenge {
+  id          String   @id @default(cuid()) @db.Char(25)
+  name        String   @db.VarChar(100) // 例：「東京マラソン2025」
+  description String?  @db.Text
+  targetDate  DateTime @db.Date // 大会開催日
+  type        String   @db.VarChar(50) // 'marathon', 'ultra-marathon' など
+  status      String   @db.VarChar(20) // 'active' or 'completed'
+
+  processId  String            @db.Char(25) // プロセスへの参照
+  process    ChallengeProcess  @relation(fields: [processId], references: [id])
+  members    ChallengeMember[]
+  activities Activity[]
+  createdAt  DateTime          @default(now()) @db.Timestamp
+  updatedAt  DateTime          @updatedAt @db.Timestamp
+
+  @@unique([processId])
+  @@index([processId])
+}
+
+// チャレンジへの過程（プロセス）
+model ChallengeProcess {
+  id String @id @default(cuid()) @db.Char(25)
+
+  challenge Challenge? // チャレンジへの逆参照（1対1）
+  messages  Message[] // このプロセス上のメッセージ（1対多）
+  createdAt DateTime   @default(now()) @db.Timestamp
 }
 
 enum Role {
-  ADMIN
-  MEMBER
+  admin
+  member
 }
 
-// グループメンバーモデル
-model GroupMember {
-  id        String   @id @default(cuid()) @db.Char(25)
-  userId    String   @db.Char(25)
-  groupId   String   @db.Char(25)
-  user      User     @relation(fields: [userId], references: [id])
-  group     Group    @relation(fields: [groupId], references: [id])
-  role      Role     @default(MEMBER)
-  createdAt DateTime @default(now())
+// チャレンジメンバー（ユーザーとチャレンジの中間テーブル）
+model ChallengeMember {
+  id          String @id @default(cuid()) @db.Char(25)
+  userId      String @db.Char(25)
+  challengeId String @db.Char(25)
+  role        Role   @default(member)
 
-  @@unique([userId, groupId])
+  user      User      @relation(fields: [userId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+  createdAt DateTime  @default(now()) @db.Timestamp
+
+  @@unique([userId, challengeId])
+  @@index([challengeId])
 }
 
-// 目標モデル
-model Goal {
-  id          String     @id @default(cuid()) @db.Char(25)
-  groupId     String     @db.Char(25)
-  group       Group      @relation(fields: [groupId], references: [id])
-  title       String // e.g. "2025東京マラソン完走"
-  targetDate  DateTime   @db.Date
-  description String?
-  activities  Activity[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-}
-
-// 活動記録モデル
+// 活動記録
 model Activity {
-  id        String   @id @default(cuid()) @db.Char(25)
-  userId    String   @db.Char(25)
-  goalId    String   @db.Char(25)
-  user      User     @relation(fields: [userId], references: [id])
-  goal      Goal     @relation(fields: [goalId], references: [id])
-  distance  Int // meters (e.g. 5000 = 5km)
-  duration  Int // seconds (e.g. 1800 = 30min)
-  // date      DateTime
-  notes     String?  @db.VarChar(255)
-  // imageUrl  String?
-  // comments  Comment[]
-  // likes     Like[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid()) @db.Char(25)
+  userId      String   @db.Char(25)
+  challengeId String   @db.Char(25)
+  distance    Int      @db.Integer // meters単位
+  duration    Int      @db.Integer // seconds単位
+  date        DateTime @db.Timestamp
+  notes       String?  @db.Text
+  imageUrl    String?  @db.VarChar(255)
+
+  user      User      @relation(fields: [userId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+  messages  Message[] // この活動に対するメッセージ
+
+  createdAt DateTime @default(now()) @db.Timestamp
+  updatedAt DateTime @updatedAt @db.Timestamp
+
+  @@index([userId])
+  @@index([challengeId])
 }
 
-//
-// // コメントモデル
-// model Comment {
-//   id         String   @id @default(cuid()) @db.Char(25)
-//   content    String
-//   userId     String @db.Char(25)
-//   user       User     @relation(fields: [userId], references: [id])
-//   activityId String @db.Char(25)
-//   activity   Activity @relation(fields: [activityId], references: [id])
-//   createdAt  DateTime @default(now())
-// }
-//
-// // いいねモデル
-// model Like {
-//   id         String   @id @default(cuid()) @db.Char(25)
-//   userId     String @db.Char(25)
-//   user       User     @relation(fields: [userId], references: [id])
-//   activityId String @db.Char(25)
-//   activity   Activity @relation(fields: [activityId], references: [id])
-//   createdAt  DateTime @default(now())
-//
-//   @@unique([userId, activityId])
-// }
+// メッセージ（旧Comment）
+model Message {
+  id         String  @id @default(cuid()) @db.Char(25)
+  content    String  @db.Text
+  userId     String  @db.Char(25)
+  processId  String  @db.Char(25) // 必須：どのプロセス上のメッセージか
+  activityId String? @db.Char(25) // オプション：特定の活動に対するメッセージの場合
+
+  user     User             @relation(fields: [userId], references: [id])
+  process  ChallengeProcess @relation(fields: [processId], references: [id])
+  activity Activity?        @relation(fields: [activityId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamp
+
+  @@index([userId])
+  @@index([processId])
+  @@index([activityId])
+}

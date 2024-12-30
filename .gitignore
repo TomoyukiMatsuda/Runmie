@@ -1,6 +1,9 @@
+# idea
 .idea/*
+apps/*/.idea
 
-# backend
-backend/node_modules
-backend/dist
-backend/.env
+
+# apps
+apps/*/node_modules
+apps/*/dist
+apps/*/.env
