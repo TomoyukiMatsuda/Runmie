@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../user.repository';
-import { User } from '../domain/user';
+import { UserRepository } from '../domain/user.repository';
+import { UserEntity } from '../domain/user.entity';
 
 @Injectable()
 export class CreateUserUseCase {
@@ -10,7 +10,15 @@ export class CreateUserUseCase {
     id: string;
     name: string;
   }> {
-    const newUser = User.create({ name });
-    return await this.userRepository.create(newUser);
+    const newUser = UserEntity.create({ name });
+    const result = await this.userRepository.create(newUser);
+    if (!result.id) {
+      throw new Error('Failed to create user');
+    }
+
+    return {
+      id: result.id,
+      name: result.name,
+    };
   }
 }

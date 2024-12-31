@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../user.repository';
+import { UserRepository } from '../domain/user.repository';
 
 @Injectable()
 export class GetUserUseCase {
@@ -9,6 +9,14 @@ export class GetUserUseCase {
     id: string;
     name: string;
   }> {
-    return await this.userRepository.findById(id);
+    const user = await this.userRepository.findById(id);
+    if (!user?.id) {
+      throw new Error('User not found');
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+    };
   }
 }

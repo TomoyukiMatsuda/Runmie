@@ -2,7 +2,7 @@ import { ChallengeStatus as PrismaChallengeStatus } from '@prisma/client';
 
 export type ChallengeStatus = PrismaChallengeStatus;
 
-export class Challenge {
+export class ChallengeEntity {
   readonly id: string | undefined;
   readonly title: string;
   readonly description: string | null;
@@ -15,7 +15,7 @@ export class Challenge {
   // activities Activity[]
 
   private constructor(params: {
-    id?: string;
+    id: string | undefined;
     title: string;
     description: string | null;
     targetDate: Date;
@@ -36,8 +36,9 @@ export class Challenge {
     targetDate: Date;
     status: ChallengeStatus;
     processId: string;
-  }): Challenge {
-    return new Challenge({
+  }): ChallengeEntity {
+    return new ChallengeEntity({
+      id: undefined,
       ...params,
     });
   }
@@ -47,9 +48,10 @@ export class Challenge {
     description: string | null;
     targetDate: Date;
     status: ChallengeStatus;
-  }): Challenge {
-    return new Challenge({
+  }): ChallengeEntity {
+    return new ChallengeEntity({
       ...params,
+      id: this.id,
       processId: this.processId,
     });
   }
@@ -61,8 +63,8 @@ export class Challenge {
     targetDate: Date;
     status: ChallengeStatus;
     processId: string;
-  }): Challenge {
-    return new Challenge({
+  }): ChallengeEntity {
+    return new ChallengeEntity({
       ...params,
     });
   }

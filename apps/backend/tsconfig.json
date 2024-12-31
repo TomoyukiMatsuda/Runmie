@@ -1,22 +1,52 @@
 {
   "compilerOptions": {
+    // モジュールと対象設定
     "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
     "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./dist",
+    "lib": ["ES2021"],  // 利用可能なライブラリを明示的に指定
+
+    // 厳格な型チェック設定
+    "strict": true,
+    "noImplicitAny": true,          // 暗黙的なany型を禁止
+    "strictBindCallApply": true,    // bind, call, applyの型チェックを厳密に
+    "strictFunctionTypes": true,    // 関数型の厳密なチェック
+    "strictPropertyInitialization": true,  // クラスプロパティの初期化チェック
+    "noImplicitThis": true,         // thisの型を明示的に要求
+    "useUnknownInCatchVariables": true,  // catchのエラー変数をunknown型に
+
+    // エラー検出の強化
+    "noFallthroughCasesInSwitch": true,  // switchのフォールスルーを防止
+    "noUncheckedIndexedAccess": true,    // インデックスアクセスの厳密なチェック
+    "noImplicitOverride": true,          // オーバーライドを明示的に要求
+
+    // モジュール解決の改善
     "baseUrl": "./",
-    "incremental": true,
+    "paths": {
+      "@/*": ["src/*"]  // エイリアスパスの設定（ソースディレクトリの構造に応じて）
+    },
+    "moduleResolution": "node",  // モジュール解決戦略を明示的に指定
+
+    // ビルド出力の設定
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,  // 型定義ファイルのソースマップ生成
+    "removeComments": true,
+
+    // その他の重要な設定
+    "esModuleInterop": true,  // CommonJSモジュールとESモジュールの相互運用性を改善
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-    "strict": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+
+    // デコレータサポート
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // インポート関連
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true  // JSONファイルのインポートを可能に
+  },
+  "include": ["src/**/*"],  // コンパイル対象を明示的に指定
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]  // コンパイル対象から除外
 }

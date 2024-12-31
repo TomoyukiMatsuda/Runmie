@@ -1,25 +1,25 @@
-import { PrismaService } from '../../libs/prisma/prismaService';
-import { User } from './domain/user';
+import { PrismaService } from '../../../libs/prisma/prismaService';
+import { UserEntity } from './user.entity';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(entity: User): Promise<User> {
+  async create(entity: UserEntity): Promise<UserEntity> {
     const user = await this.prisma.user.create({
       data: {
         ...entity,
       },
     });
 
-    return User.toEntity({
+    return UserEntity.toEntity({
       id: user.id,
       name: user.name,
     });
   }
 
-  async update(entity: User): Promise<User> {
+  async update(entity: UserEntity): Promise<UserEntity> {
     if (!entity.id) {
       throw new Error('ID is required');
     }
@@ -33,13 +33,13 @@ export class UserRepository {
       },
     });
 
-    return User.toEntity({
+    return UserEntity.toEntity({
       id: user.id,
       name: user.name,
     });
   }
 
-  async findById(id: string): Promise<User | undefined> {
+  async findById(id: string): Promise<UserEntity | undefined> {
     // TODO: なぜ type が nullable にならないのか？
     const user = await this.prisma.user.findUnique({
       where: {
@@ -51,7 +51,7 @@ export class UserRepository {
       return;
     }
 
-    return User.toEntity({
+    return UserEntity.toEntity({
       id: user.id,
       name: user.name,
     });

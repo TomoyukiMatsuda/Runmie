@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model UserEntity {
   id               String                     @id @default(cuid()) @db.Char(25)
   name             String                     @db.VarChar(30)
   challengeMembers ChallengeMember[]
@@ -33,7 +33,7 @@ enum ChallengeStatus {
   @@map("challenge_statuses")
 }
 
-model Challenge {
+model ChallengeEntity {
   id          String          @id @default(cuid()) @db.Char(25)
   title       String          @db.VarChar(100)
   description String?         @db.Text
@@ -48,7 +48,7 @@ model Challenge {
   @@map("challenges")
 }
 
-model ChallengeProcess {
+model ChallengeProcessEntity {
   challengeId String                     @id @map("challenge_id") @db.Char(25)
   challenge   Challenge                  @relation(fields: [challengeId], references: [id])
   messages    ChallengeProcessMessage[]
@@ -67,7 +67,7 @@ enum ChallengeMemberRole {
   @@map("roles")
 }
 
-model ChallengeMember {
+model ChallengeMemberEntity {
   userId      String                     @map("user_id") @db.Char(25)
   challengeId String                     @map("challenge_id") @db.Char(25)
   role        ChallengeMemberRole        @default(member)
@@ -82,14 +82,14 @@ model ChallengeMember {
   @@map("challenge_members")
 }
 
-model ChallengeProcessActivity {
+model ChallengeProcessActivityEntity {
   id          String                    @id @default(cuid()) @db.Char(25)
   userId      String                    @map("user_id") @db.Char(25)
   challengeId String                    @map("challenge_id") @db.Char(25)
   distance    Int                       @db.Integer
   duration    Int                       @db.Integer
   date        DateTime                  @db.Timestamp
-  notes       String?                   @db.Text
+  note        String?                   @db.Text
   imageUrl    String?                   @map("image_url") @db.VarChar(255)
   member      ChallengeMember           @relation(fields: [userId, challengeId], references: [userId, challengeId])
   process     ChallengeProcess          @relation(fields: [challengeId], references: [challengeId])
@@ -103,7 +103,7 @@ model ChallengeProcessActivity {
   @@map("activities")
 }
 
-model ChallengeProcessMessage {
+model ChallengeProcessMessageEntity {
   id          String                    @id @default(cuid()) @db.Char(25)
   content     String                    @db.Text
   userId      String                    @map("user_id") @db.Char(25)
