@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model UserEntity {
+model User {
   id               String                     @id @default(cuid()) @db.Char(25)
   name             String                     @db.VarChar(30)
   challengeMembers ChallengeMember[]
@@ -33,7 +33,7 @@ enum ChallengeStatus {
   @@map("challenge_statuses")
 }
 
-model ChallengeEntity {
+model Challenge {
   id          String          @id @default(cuid()) @db.Char(25)
   title       String          @db.VarChar(100)
   description String?         @db.Text
@@ -48,7 +48,7 @@ model ChallengeEntity {
   @@map("challenges")
 }
 
-model ChallengeProcessEntity {
+model ChallengeProcess {
   challengeId String                     @id @map("challenge_id") @db.Char(25)
   challenge   Challenge                  @relation(fields: [challengeId], references: [id])
   messages    ChallengeProcessMessage[]
@@ -67,7 +67,7 @@ enum ChallengeMemberRole {
   @@map("roles")
 }
 
-model ChallengeMemberEntity {
+model ChallengeMember {
   userId      String                     @map("user_id") @db.Char(25)
   challengeId String                     @map("challenge_id") @db.Char(25)
   role        ChallengeMemberRole        @default(member)
@@ -82,7 +82,7 @@ model ChallengeMemberEntity {
   @@map("challenge_members")
 }
 
-model ChallengeProcessActivityEntity {
+model ChallengeProcessActivity {
   id          String                    @id @default(cuid()) @db.Char(25)
   userId      String                    @map("user_id") @db.Char(25)
   challengeId String                    @map("challenge_id") @db.Char(25)
@@ -103,7 +103,7 @@ model ChallengeProcessActivityEntity {
   @@map("activities")
 }
 
-model ChallengeProcessMessageEntity {
+model ChallengeProcessMessage {
   id          String                    @id @default(cuid()) @db.Char(25)
   content     String                    @db.Text
   userId      String                    @map("user_id") @db.Char(25)
