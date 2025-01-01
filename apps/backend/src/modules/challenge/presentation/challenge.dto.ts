@@ -1,11 +1,4 @@
-import {
-  IsDate,
-  IsDateString,
-  IsIn,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsDateString, IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateChallengeDto {
   @IsString({ message: 'タイトルが不正な文字です' })
@@ -15,13 +8,7 @@ export class CreateChallengeDto {
   @IsString({ message: '詳細が不正な文字です' })
   readonly description!: string;
 
-  @Transform(({ value }) => {
-    // YYYY-MM-DD 形式の文字列に変換
-    if (value instanceof Date) {
-      return value.toISOString().split('T')[0];
-    }
-    return value;
-  })
+  // TODO 未来日付
   @IsDateString({}, { message: '目標日はYYYY-MM-DD形式で入力してください' })
   @IsNotEmpty({ message: '目標日が空です' })
   readonly targetDate!: Date;
