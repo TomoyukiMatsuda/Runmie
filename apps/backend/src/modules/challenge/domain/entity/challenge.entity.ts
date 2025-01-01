@@ -35,7 +35,7 @@ export class ChallengeEntity {
     title: string;
     description: string | null;
     targetDate: Date;
-    status: ChallengeStatus;
+    status: 'draft' | 'active';
   }): ChallengeEntity {
     return new ChallengeEntity({
       id: undefined,

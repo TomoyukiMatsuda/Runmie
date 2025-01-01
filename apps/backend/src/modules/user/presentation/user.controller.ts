@@ -22,12 +22,12 @@ export class UserController {
   @Post('sign_in')
   async signIn(): Promise<{ id: string; name: string }> {
     // todo: 認証処理
-    return await this.getUserUseCase.execute('id');
+    return await this.getUserUseCase.execute('1234567890123456789012345');
   }
 
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: string, // todo: ログインユーザーのIDを取得
     @Body() dto: UpdateUserDto,
   ): Promise<{
     success: boolean;

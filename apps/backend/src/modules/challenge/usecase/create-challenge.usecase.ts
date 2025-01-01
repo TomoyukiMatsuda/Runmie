@@ -14,7 +14,7 @@ export class CreateChallengeUseCase {
     title: string;
     description: string | null;
     targetDate: Date;
-    status: ChallengeStatus;
+    status: 'draft' | 'active';
   }): Promise<{
     challenge: {
       id: string;

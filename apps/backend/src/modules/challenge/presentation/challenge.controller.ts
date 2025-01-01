@@ -24,7 +24,7 @@ export class ChallengeController {
     };
   }> {
     return await this.createChallengeUseCase.execute({
-      creatorId: 'creatorId', // todo: ログインユーザーのIDを取得
+      creatorId: '1234567890123456789012345', // todo: ログインユーザーのIDを取得
       ...dto,
     });
   }
