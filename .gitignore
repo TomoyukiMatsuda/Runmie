@@ -1,9 +1,12 @@
 # idea
 .idea/*
-apps/*/.idea
-
+node_modules
+dist
+package-lock.json
 
 # apps
+apps/*/.idea
 apps/*/node_modules
 apps/*/dist
 apps/*/.env
+apps/*/package-lock.json

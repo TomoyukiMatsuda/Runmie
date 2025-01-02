@@ -1,52 +1,37 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    // モジュールと対象設定
+    // バックエンド固有のモジュール設定
     "module": "commonjs",
-    "target": "ES2021",
-    "lib": ["ES2021"],  // 利用可能なライブラリを明示的に指定
+    "lib": ["ES2021"],
+    "moduleResolution": "node",
 
-    // 厳格な型チェック設定
-    "strict": true,
-    "noImplicitAny": true,          // 暗黙的なany型を禁止
-    "strictBindCallApply": true,    // bind, call, applyの型チェックを厳密に
-    "strictFunctionTypes": true,    // 関数型の厳密なチェック
-    "strictPropertyInitialization": true,  // クラスプロパティの初期化チェック
-    "noImplicitThis": true,         // thisの型を明示的に要求
-    "useUnknownInCatchVariables": true,  // catchのエラー変数をunknown型に
+    // 追加の厳格な型チェック
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
 
-    // エラー検出の強化
-    "noFallthroughCasesInSwitch": true,  // switchのフォールスルーを防止
-    "noUncheckedIndexedAccess": true,    // インデックスアクセスの厳密なチェック
-    "noImplicitOverride": true,          // オーバーライドを明示的に要求
-
-    // モジュール解決の改善
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]  // エイリアスパスの設定（ソースディレクトリの構造に応じて）
-    },
-    "moduleResolution": "node",  // モジュール解決戦略を明示的に指定
-
-    // ビルド出力の設定
+    // ビルド出力設定
     "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,
-    "declarationMap": true,  // 型定義ファイルのソースマップ生成
+    "declarationMap": true,
     "removeComments": true,
 
-    // その他の重要な設定
-    "esModuleInterop": true,  // CommonJSモジュールとESモジュールの相互運用性を改善
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "incremental": true,
+    // バックエンド固有のパス設定
+    "paths": {
+      "@/*": ["src/*"]
+    },
 
-    // デコレータサポート
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
-    // インポート関連
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true  // JSONファイルのインポートを可能に
+    // その他のバックエンド固有設定
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],  // コンパイル対象を明示的に指定
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]  // コンパイル対象から除外
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

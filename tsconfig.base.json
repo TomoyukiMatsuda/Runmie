@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    // 共通のターゲットとモジュール設定
+    "target": "ES2021",
+
+    // 共通の厳格な型チェック設定
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+
+    // 共通のモジュール解決設定
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+
+    // その他の共通設定
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "exclude": ["node_modules"]
+}
