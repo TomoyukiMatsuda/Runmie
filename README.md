@@ -1,6 +1,7 @@
 # Technical Stack
 
 ## Frontend
+
 - Next.js (App Router)
 - TypeScript
 - TailwindCSS
@@ -9,14 +10,16 @@
 - Supabase Client (認証・データ操作)
 
 ## Backend / Database / Infrastructure
+
 - Supabase
-    - PostgreSQL Database
-    - Authentication
-    - Storage (画像アップロード)
-    - Row Level Security (RLS)
-    - Edge Functions (必要に応じて)
+  - PostgreSQL Database
+  - Authentication
+  - Storage (画像アップロード)
+  - Row Level Security (RLS)
+  - Edge Functions (必要に応じて)
 
 ## Hosting
+
 - Vercel (Frontend)
 - Supabase (Backend / DB)
 
@@ -137,14 +140,15 @@ create policy "自分のアクティビティのみ作成可能" on public.activ
 # Key Features Implementation
 
 ## 認証
+
 ```typescript
 // src/lib/supabase.ts
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
 // src/components/auth/SignInForm.tsx
 export function SignInForm() {
@@ -152,14 +156,15 @@ export function SignInForm() {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
     // エラーハンドリング
-  }
+  };
   // ...
 }
 ```
 
 ## UIコンポーネント
+
 ```typescript
 // src/components/activities/ActivityCard.tsx
 import {
@@ -194,17 +199,19 @@ Supabaseの自動生成されるAPIを主に使用し、必要に応じてEdge F
 export async function getGroupActivities(groupId: string) {
   const { data, error } = await supabase
     .from('activities')
-    .select(`
+    .select(
+      `
       *,
       user:user_id(name),
       likes(count),
       comments(count)
-    `)
+    `,
+    )
     .eq('group_id', groupId)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false });
 
-  if (error) throw error
-  return data
+  if (error) throw error;
+  return data;
 }
 ```
 
@@ -214,15 +221,15 @@ Supabase Storageを使用：
 
 ```typescript
 async function uploadImage(file: File) {
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${Math.random()}.${fileExt}`
-  const filePath = `${auth.user().id}/${fileName}`
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random()}.${fileExt}`;
+  const filePath = `${auth.user().id}/${fileName}`;
 
   const { error } = await supabase.storage
     .from('activity-images')
-    .upload(filePath, file)
+    .upload(filePath, file);
 
-  if (error) throw error
-  return filePath
+  if (error) throw error;
+  return filePath;
 }
 ```
