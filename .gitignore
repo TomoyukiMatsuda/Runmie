@@ -9,5 +9,4 @@ apps/*/.idea
 apps/*/node_modules
 apps/*/dist
 apps/*/.env
-apps/*/package-lock.json
 apps/*/.next/*

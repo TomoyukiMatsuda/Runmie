@@ -2,9 +2,6 @@
   "name": "runmie",
   "version": "0.0.1",
   "description": "",
-  "workspaces": [
-    "apps/*"
-  ],
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
