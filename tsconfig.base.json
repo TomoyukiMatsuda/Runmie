@@ -10,9 +10,6 @@
     "baseUrl": "./",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
-    "jsx": "preserve",
-    "lib": ["dom", "dom.iterable", "esnext"]
   },
   "exclude": ["node_modules"]
 }
