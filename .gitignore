@@ -9,4 +9,5 @@ apps/*/.idea
 apps/*/node_modules
 apps/*/dist
 apps/*/.env
-apps/*/.next/*
+apps/*/.env.local
+apps/*/.next
