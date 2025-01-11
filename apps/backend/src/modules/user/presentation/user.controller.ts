@@ -1,8 +1,18 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserUseCase } from '../usecase/create-user.usecase';
 import { CreateUserDto, UpdateUserDto } from './user-dto';
 import { UpdateUserUseCase } from '../usecase/update-user.usecase';
 import { GetUserUseCase } from '../usecase/get-user.usecase';
+import { AuthGuard } from '@/libs/auth/auth.guard';
+import { AuthUser, AuthUserType } from '@/libs/auth/user.decorator';
 
 @Controller()
 export class UserController {
@@ -19,11 +29,12 @@ export class UserController {
     return await this.createUserUseCase.execute(body.name);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  // session 情報から id を取得する
-  async get() // @Param('id') id: string,
-  : Promise<{ id: string; name: string }> {
-    return await this.getUserUseCase.execute('1234567890123456789012345');
+  async get(
+    @AuthUser() user: AuthUserType,
+  ): Promise<{ id: string; name: string }> {
+    return await this.getUserUseCase.execute(user.id);
   }
 
   // todo supabase に任せればいらないかも

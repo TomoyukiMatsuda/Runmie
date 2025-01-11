@@ -7,7 +7,7 @@ import {
 import { createClient } from '@supabase/supabase-js';
 
 @Injectable()
-export class SupabaseAuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   private readonly supabase = createClient(
     process.env.SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

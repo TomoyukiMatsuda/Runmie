@@ -12,7 +12,7 @@ export class SupabaseStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // payloadにはJWTのデコードされた情報が含まれます
+    // payloadにはJWTのデコードされた情報が含まれる
     return { userId: payload.sub, email: payload.email };
   }
 }
