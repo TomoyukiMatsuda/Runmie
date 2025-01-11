@@ -24,7 +24,7 @@
     "declarationMap": true,
     "removeComments": true,
 
-    // バックエンド固有のパス設定
+    // バックエンド固有のパス設定. うまくいってない
     "paths": {
       "@/*": ["src/*"]
     },
