@@ -4,14 +4,15 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { createClient } from '@supabase/supabase-js';
+import { UserRepository } from '@/modules/user/domain/user.repository';
+import { SupabaseService } from '@/libs/supabase/supabaseService';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  private readonly supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly supabase: SupabaseService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -23,11 +24,15 @@ export class AuthGuard implements CanActivate {
 
     try {
       const {
-        data: { user },
+        data: { user: supabaseUser },
         error,
-      } = await this.supabase.auth.getUser(token);
+      } = await this.supabase.supabaseClient.auth.getUser(token);
 
-      if (error || !user) {
+      if (error || !supabaseUser) {
+        throw new UnauthorizedException();
+      }
+      const user = await this.userRepository.findById(supabaseUser.id);
+      if (!user) {
         throw new UnauthorizedException();
       }
 

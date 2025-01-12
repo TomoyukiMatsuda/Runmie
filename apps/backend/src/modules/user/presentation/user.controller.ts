@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Header,
+  Headers,
   Param,
   Patch,
   Post,
@@ -24,9 +26,10 @@ export class UserController {
 
   @Post('signup')
   async signup(
+    @Headers('Authorization') authToken: string,
     @Body() body: CreateUserDto,
   ): Promise<{ id: string; name: string }> {
-    return await this.createUserUseCase.execute(body.name);
+    return await this.createUserUseCase.execute(authToken, body.name);
   }
 
   @UseGuards(AuthGuard)

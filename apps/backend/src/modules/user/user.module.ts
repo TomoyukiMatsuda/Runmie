@@ -6,9 +6,10 @@ import { GetUserUseCase } from '@/modules/user/usecase/get-user.usecase';
 import { UserRepository } from '@/modules/user/domain/user.repository';
 import { PrismaModule } from '@/libs/prisma/prisma.module';
 import { AuthModule } from '@/libs/auth/auth.module';
+import { SupabaseModule } from '@/libs/supabase/supabase.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PrismaModule, AuthModule, SupabaseModule],
   controllers: [UserController],
   providers: [
     CreateUserUseCase,
