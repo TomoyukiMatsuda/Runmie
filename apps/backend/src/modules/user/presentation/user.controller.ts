@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserUseCase } from '../usecase/create-user.usecase';
@@ -26,9 +27,14 @@ export class UserController {
 
   @Post('signup')
   async signup(
-    @Headers('Authorization') authToken: string,
+    @Headers('Authorization') authorization: string,
     @Body() body: CreateUserDto,
   ): Promise<{ id: string; name: string }> {
+    const [type, authToken] = authorization.split('');
+    if (type !== 'Bearer' || !authToken) {
+      throw new UnauthorizedException();
+    }
+
     return await this.createUserUseCase.execute(authToken, body.name);
   }
 
