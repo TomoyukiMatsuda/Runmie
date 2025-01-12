@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../domain/user.repository';
 import { UserEntity } from '../domain/user.entity';
-import { SupabaseService } from '@/libs/supabase/supabaseService';
+import { SupabaseService } from '@/libs/supabase/supabase.service';
 
 @Injectable()
 export class CreateUserUseCase {
