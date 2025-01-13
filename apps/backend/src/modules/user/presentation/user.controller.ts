@@ -38,14 +38,6 @@ export class UserController {
     return await this.createUserUseCase.execute(authToken, body.name);
   }
 
-  @UseGuards(AuthGuard)
-  @Get()
-  async get(
-    @AuthUser() user: AuthUserType,
-  ): Promise<{ id: string; name: string }> {
-    return await this.getUserUseCase.execute(user.id);
-  }
-
   // todo supabase に任せればいらないかも
   @Post('sign_in')
   async signIn(): Promise<{ id: string; name: string }> {
@@ -53,9 +45,17 @@ export class UserController {
     return await this.getUserUseCase.execute('1234567890123456789012345');
   }
 
-  @Patch(':id')
+  @UseGuards(AuthGuard)
+  @Get('me')
+  async get(
+    @AuthUser() user: AuthUserType,
+  ): Promise<{ id: string; name: string }> {
+    return await this.getUserUseCase.execute(user.id);
+  }
+
+  @Patch('me')
   async update(
-    @Param('id') id: string, // todo: ログインユーザーのIDを取得
+    @Param('id') id: string, // todo: ログインユーザーのIDを session から取得する
     @Body() dto: UpdateUserDto,
   ): Promise<{
     success: boolean;

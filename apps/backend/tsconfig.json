@@ -23,8 +23,7 @@
     "declaration": true,
     "declarationMap": true,
     "removeComments": true,
-
-    // バックエンド固有のパス設定. うまくいってない
+    "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
     },
