@@ -17,7 +17,7 @@ const fetcher = async (
     arg: { authToken: string };
   },
 ) => {
-  const url = 'http://localhost:80' + path;
+  const url = 'http://localhost:8000' + path;
   const result = await fetch(url, {
     method,
     headers: {

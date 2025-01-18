@@ -18,10 +18,34 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await createSupabaseServerClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log('error:', error);
-    if (!error) {
+    const session = await supabase.auth.getSession();
+    const token = session.data.session?.access_token;
+    if (!error && token) {
       const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development';
+
+      const meResponse = await fetch('http://localhost:8000/me', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log('me', meResponse);
+      // todo status code で よくわかんないエラー or ユーザー情報が取得できなかった場合でハンドリングしたい
+      if (!meResponse.ok && meResponse.status === 401) {
+        console.log('新規登録する');
+        // 新規登録する
+        await fetch('http://localhost:8000/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
       if (isLocalEnv) {
         // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
         return NextResponse.redirect(`${origin}${next}`);
@@ -33,6 +57,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // redirect the user to an error page with some instructions
+  // TODO: エラーハンドリング
   NextResponse.redirect('/error');
 }
