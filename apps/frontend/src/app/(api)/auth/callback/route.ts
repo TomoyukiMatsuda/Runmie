@@ -3,17 +3,8 @@ import { createSupabaseServerClient } from '@/utils/supabase/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
-  const tokenHash = searchParams.get('access_token');
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/';
-
-  // うまくいかん
-  // https://supabase.com/docs/guides/auth/social-login/auth-google?queryGroups=environment&environment=client
-
-  console.log('============ route GET /auth/callback ==========');
-  console.log('tokenHash:', tokenHash);
-  console.log('code:', code);
-  console.log('next:', next);
 
   if (code) {
     const supabase = await createSupabaseServerClient();
@@ -32,10 +23,8 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      console.log('me', meResponse);
       // todo status code で よくわかんないエラー or ユーザー情報が取得できなかった場合でハンドリングしたい
       if (!meResponse.ok && meResponse.status === 401) {
-        console.log('新規登録する');
         // 新規登録する
         await fetch('http://localhost:8000/signup', {
           method: 'POST',
@@ -57,6 +46,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // TODO: エラーハンドリング
-  NextResponse.redirect('/error');
+  NextResponse.redirect('/signIn?error=auth_error');
 }
