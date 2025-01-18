@@ -10,10 +10,7 @@ export class CreateUserUseCase {
     private readonly supabase: SupabaseService,
   ) {}
 
-  async execute(
-    authToken: string,
-    name: string,
-  ): Promise<{
+  async execute(authToken: string): Promise<{
     id: string;
     name: string;
   }> {
@@ -21,11 +18,17 @@ export class CreateUserUseCase {
       data: { user: supabaseUser },
       error,
     } = await this.supabase.supabaseClient.auth.getUser(authToken);
+
+    console.log('supabaseUser', supabaseUser, error);
+
     if (error || !supabaseUser) {
       throw new UnauthorizedException();
     }
 
-    const newUser = UserEntity.create({ name, supabaseId: supabaseUser.id });
+    const newUser = UserEntity.create({
+      name: supabaseUser.user_metadata.full_name,
+      supabaseId: supabaseUser.id,
+    });
     const result = await this.userRepository.create(newUser);
     if (!result.id) {
       throw new Error('Failed to create user');

@@ -19,7 +19,7 @@ model User {
   challengeMembers ChallengeMember[]
   activities       ChallengeProcessActivity[]
   messages         ChallengeProcessMessage[]
-  supabaseId       String                     @unique @db.Char(28)
+  supabaseId       String                     @unique @db.Char(36)
   createdAt        DateTime                   @default(now()) @map("created_at") @db.Timestamp
   updatedAt        DateTime                   @updatedAt @map("updated_at") @db.Timestamp
 

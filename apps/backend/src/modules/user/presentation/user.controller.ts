@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserUseCase } from '../usecase/create-user.usecase';
-import { CreateUserDto, UpdateUserDto } from './user-dto';
+import { UpdateUserDto } from './user-dto';
 import { UpdateUserUseCase } from '../usecase/update-user.usecase';
 import { GetUserUseCase } from '../usecase/get-user.usecase';
 import { AuthGuard } from '@/libs/auth/auth.guard';
@@ -28,14 +28,17 @@ export class UserController {
   @Post('signup')
   async signup(
     @Headers('Authorization') authorization: string,
-    @Body() body: CreateUserDto,
   ): Promise<{ id: string; name: string }> {
-    const [type, authToken] = authorization.split('');
+    console.log('auth', authorization);
+    const [type, authToken] = authorization.split(' ');
+    console.log('authToken1', authToken);
+
     if (type !== 'Bearer' || !authToken) {
       throw new UnauthorizedException();
     }
 
-    return await this.createUserUseCase.execute(authToken, body.name);
+    console.log('authToken2', authToken);
+    return await this.createUserUseCase.execute(authToken);
   }
 
   // todo supabase に任せればいらないかも

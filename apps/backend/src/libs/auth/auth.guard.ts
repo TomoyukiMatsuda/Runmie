@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { UserRepository } from '@/modules/user/domain/user.repository';
 import { SupabaseService } from '@/libs/supabase/supabase.service';
+import * as console from 'node:console';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -31,7 +32,10 @@ export class AuthGuard implements CanActivate {
       if (error || !supabaseUser) {
         throw new UnauthorizedException();
       }
-      const user = await this.userRepository.findById(supabaseUser.id);
+      const user = await this.userRepository.findBySupabaseId(supabaseUser.id);
+
+      console.log('user', user);
+
       if (!user) {
         throw new UnauthorizedException();
       }
