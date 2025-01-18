@@ -1,16 +1,21 @@
 'use client';
 
-import { supabaseClient } from '@/utils/supabase/client';
+import { supabaseBrowserClient } from '@/utils/supabase/client';
 import { useCallback } from 'react';
 
 export function GoogleAuth() {
   const handleGoogleLogin = useCallback(async () => {
     try {
       // Googleログインを実行
-      const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      const { error } = await supabaseBrowserClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          skipBrowserRedirect: false,
+          // デバッグ用にエラーを詳細に表示
+          queryParams: {
+            next: '/profile',
+          },
         },
       });
 
