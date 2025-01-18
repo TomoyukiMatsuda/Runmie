@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CreateChallengeUseCase } from '@/modules/challenge/usecase/create-challenge.usecase';
 import { ChallengeStatus } from '@/modules/challenge/domain/entity/challenge.entity';
 import { CreateChallengeDto } from '@/modules/challenge/presentation/challenge.dto';
+import { AuthUserGuard } from '@/libs/auth/auth.user.guard';
 
+@UseGuards(AuthUserGuard)
 @Controller('/challenges')
 export class ChallengeController {
   constructor(

@@ -2,9 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  Header,
   Headers,
-  Param,
   Patch,
   Post,
   UnauthorizedException,
@@ -14,7 +12,7 @@ import { CreateUserUseCase } from '../usecase/create-user.usecase';
 import { UpdateUserDto } from './user-dto';
 import { UpdateUserUseCase } from '../usecase/update-user.usecase';
 import { GetUserUseCase } from '../usecase/get-user.usecase';
-import { AuthGuard } from '@/libs/auth/auth.guard';
+import { AuthUserGuard } from '@/libs/auth/auth.user.guard';
 import { AuthUser, AuthUserType } from '@/libs/auth/user.decorator';
 
 @Controller()
@@ -29,26 +27,16 @@ export class UserController {
   async signup(
     @Headers('Authorization') authorization: string,
   ): Promise<{ id: string; name: string }> {
-    console.log('auth', authorization);
     const [type, authToken] = authorization.split(' ');
-    console.log('authToken1', authToken);
 
     if (type !== 'Bearer' || !authToken) {
       throw new UnauthorizedException();
     }
 
-    console.log('authToken2', authToken);
     return await this.createUserUseCase.execute(authToken);
   }
 
-  // todo supabase に任せればいらないかも
-  @Post('sign_in')
-  async signIn(): Promise<{ id: string; name: string }> {
-    // todo: 認証処理
-    return await this.getUserUseCase.execute('1234567890123456789012345');
-  }
-
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   @Get('me')
   async get(
     @AuthUser() user: AuthUserType,
@@ -56,14 +44,15 @@ export class UserController {
     return await this.getUserUseCase.execute(user.id);
   }
 
+  @UseGuards(AuthUserGuard)
   @Patch('me')
   async update(
-    @Param('id') id: string, // todo: ログインユーザーのIDを session から取得する
+    @AuthUser() user: AuthUserType,
     @Body() dto: UpdateUserDto,
   ): Promise<{
     success: boolean;
   }> {
-    await this.updateUserUseCase.execute(id, dto.name);
+    await this.updateUserUseCase.execute(user.id, dto.name);
     return { success: true };
   }
 }

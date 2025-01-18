@@ -9,7 +9,7 @@ import { SupabaseService } from '@/libs/supabase/supabase.service';
 import * as console from 'node:console';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthUserGuard implements CanActivate {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly supabase: SupabaseService,
