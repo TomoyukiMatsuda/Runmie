@@ -54,20 +54,4 @@ export class UserRepository {
       ...user,
     });
   }
-
-  async findBySupabaseId(supabaseId: string): Promise<UserEntity | undefined> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        supabaseId,
-      },
-    });
-
-    if (!user) {
-      return;
-    }
-
-    return UserEntity.toEntity({
-      ...user,
-    });
-  }
 }

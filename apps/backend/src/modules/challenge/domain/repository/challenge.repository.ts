@@ -10,7 +10,6 @@ export class ChallengeRepository {
       throw new Error('Members are required');
     }
 
-    // トランザクション内で複数の操作を実行
     const result = await this.prisma.$transaction(
       async (tx) => {
         const challenge = await tx.challenge.create({

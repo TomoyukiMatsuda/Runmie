@@ -4,14 +4,14 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserRepository } from '@/modules/user/domain/user.repository';
 import { SupabaseService } from '@/libs/supabase/supabase.service';
 import * as console from 'node:console';
+import { PrismaService } from '@/libs/prisma/prisma.service';
 
 @Injectable()
 export class AuthUserGuard implements CanActivate {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly prisma: PrismaService,
     private readonly supabase: SupabaseService,
   ) {}
 
@@ -32,13 +32,16 @@ export class AuthUserGuard implements CanActivate {
       if (error || !supabaseUser) {
         throw new UnauthorizedException();
       }
-      const user = await this.userRepository.findBySupabaseId(supabaseUser.id);
-
-      console.log('user', user);
+      const user = await this.prisma.user.findUnique({
+        where: {
+          supabaseId: supabaseUser.id,
+        },
+      });
 
       if (!user) {
         throw new UnauthorizedException();
       }
+      console.log('auth user', user);
 
       // リクエストにユーザー情報を添付
       request.user = user;
