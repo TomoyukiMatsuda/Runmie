@@ -1,5 +1,5 @@
-import { ChallengeProcessActivityEntity } from '@/modules/challenge/domain/entity/challenge-process-activity.entity';
-import { ChallengeProcessMessageEntity } from '@/modules/challenge/domain/entity/challenge-process-message.entity';
+import { ChallengeProcessActivityEntity } from '@/modules/challenge/domain/challenge-process/entity/challenge-process-activity.entity';
+import { ChallengeProcessMessageEntity } from '@/modules/challenge/domain/challenge-process/entity/challenge-process-message.entity';
 
 /**
  * model ChallengeProcess {

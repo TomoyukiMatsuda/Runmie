@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ChallengeRepository } from '@/modules/challenge/domain/repository/challenge.repository';
+import { ChallengeRepository } from '@/modules/challenge/domain/challenge/challenge.repository';
 import {
   ChallengeEntity,
   ChallengeStatus,
-} from '@/modules/challenge/domain/entity/challenge.entity';
+} from '@/modules/challenge/domain/challenge/entity/challenge.entity';
 
 @Injectable()
 export class CreateChallengeUseCase {

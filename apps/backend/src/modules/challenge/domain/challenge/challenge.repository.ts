@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/libs/prisma/prisma.service';
-import { ChallengeEntity } from '@/modules/challenge/domain/entity/challenge.entity';
+import { ChallengeEntity } from '@/modules/challenge/domain/challenge/entity/challenge.entity';
 
 @Injectable()
 export class ChallengeRepository {

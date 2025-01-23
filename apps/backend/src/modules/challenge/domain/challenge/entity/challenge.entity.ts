@@ -2,7 +2,7 @@ import { ChallengeStatus as PrismaChallengeStatus } from '@prisma/client';
 import {
   ChallengeMemberEntity,
   ChallengeMemberRole,
-} from '@/modules/challenge/domain/entity/challenge-member.entity';
+} from '@/modules/challenge/domain/challenge/entity/challenge-member.entity';
 
 export type ChallengeStatus = PrismaChallengeStatus;
 
