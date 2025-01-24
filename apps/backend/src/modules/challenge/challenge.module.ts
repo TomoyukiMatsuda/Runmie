@@ -3,8 +3,9 @@ import { ChallengeController } from '@/modules/challenge/presentation/challenge.
 import { CreateChallengeUseCase } from '@/modules/challenge/usecase/create-challenge.usecase';
 import { ChallengeRepository } from '@/modules/challenge/domain/challenge/challenge.repository';
 import { AuthModule } from '@/libs/auth/auth.module';
-import { AddChallengeMemberUsecase } from '@/modules/challenge/usecase/join-challenge.usecase';
 import { ChallengeMemberController } from '@/modules/challenge/presentation/challenge-member.controller';
+import { GetChallengesByUserIdUsecase } from '@/modules/challenge/usecase/get-challenges-by-user-id.usecase';
+import { AddChallengeMemberUsecase } from '@/modules/challenge/usecase/add-challenge-member.usecase';
 
 @Module({
   imports: [AuthModule],
@@ -12,6 +13,7 @@ import { ChallengeMemberController } from '@/modules/challenge/presentation/chal
   providers: [
     CreateChallengeUseCase,
     AddChallengeMemberUsecase,
+    GetChallengesByUserIdUsecase,
     ChallengeRepository,
   ],
 })

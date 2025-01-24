@@ -68,6 +68,23 @@ export class ChallengeRepository {
     return ChallengeEntity.toEntity(model);
   }
 
+  async findByUserId(userId: string): Promise<ChallengeEntity[]> {
+    const models = await this.prisma.challenge.findMany({
+      where: {
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+      include: {
+        members: true,
+      },
+    });
+
+    return models.map(ChallengeEntity.toEntity);
+  }
+
   async createMember(params: {
     challengeId: string;
     member: ChallengeMemberEntity;
