@@ -3,6 +3,7 @@ import { CreateChallengeUseCase } from '@/modules/challenge/usecase/create-chall
 import { ChallengeStatus } from '@/modules/challenge/domain/challenge/entity/challenge.entity';
 import { CreateChallengeDto } from '@/modules/challenge/presentation/challenge.dto';
 import { AuthUserGuard } from '@/libs/auth/auth.user.guard';
+import { AuthUser, AuthUserType } from '@/libs/auth/user.decorator';
 
 @UseGuards(AuthUserGuard)
 @Controller('/challenges')
@@ -12,7 +13,10 @@ export class ChallengeController {
   ) {}
 
   @Post()
-  async createChallenge(@Body() dto: CreateChallengeDto): Promise<{
+  async create(
+    @AuthUser() user: AuthUserType,
+    @Body() dto: CreateChallengeDto,
+  ): Promise<{
     challenge: {
       id: string;
       title: string;
@@ -25,8 +29,8 @@ export class ChallengeController {
       }[];
     };
   }> {
-    return await this.createChallengeUseCase.execute({
-      creatorId: '1234567890123456789012345', // todo: ログインユーザーのIDを取得
+    return this.createChallengeUseCase.execute({
+      creatorId: user.id,
       ...dto,
     });
   }

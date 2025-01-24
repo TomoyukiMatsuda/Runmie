@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/libs/prisma/prisma.service';
 import { ChallengeEntity } from '@/modules/challenge/domain/challenge/entity/challenge.entity';
+import { ChallengeMemberEntity } from '@/modules/challenge/domain/challenge/entity/challenge-member.entity';
 
 @Injectable()
 export class ChallengeRepository {
@@ -65,5 +66,18 @@ export class ChallengeRepository {
     }
 
     return ChallengeEntity.toEntity(model);
+  }
+
+  async createMember(params: {
+    challengeId: string;
+    member: ChallengeMemberEntity;
+  }) {
+    return this.prisma.challengeMember.create({
+      data: {
+        userId: params.member.userId,
+        challengeId: params.challengeId,
+        role: params.member.role,
+      },
+    });
   }
 }

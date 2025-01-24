@@ -62,6 +62,21 @@ export class ChallengeEntity {
     });
   }
 
+  addMember(userId: string) {
+    const existsMember = this.members.some((m) => m.userId === userId);
+    if (existsMember) {
+      throw new Error('this member already exists');
+    }
+
+    const newMember = ChallengeMemberEntity.create({
+      userId,
+      role: 'member',
+    });
+    this.members.push(newMember);
+
+    return newMember;
+  }
+
   static toEntity(params: {
     id: string;
     title: string;
@@ -75,6 +90,9 @@ export class ChallengeEntity {
   }): ChallengeEntity {
     return new ChallengeEntity({
       ...params,
+      members: params.members.map((member) =>
+        ChallengeMemberEntity.toEntity(member),
+      ),
     });
   }
 }
