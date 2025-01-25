@@ -9,6 +9,13 @@ paths:
   /signup:
     post:
         summary: "Create a new user"
+        responses:
+            201:
+                description: "User created"
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Success"
   /me:
     get:
         summary: "Get current user"
@@ -19,6 +26,92 @@ paths:
                     application/json:
                         schema:
                             $ref: "#/components/schemas/User"
+    patch:
+        summary: "Update current user"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                required:
+                    - name
+        responses:
+          201:
+            description: "User updated"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Success"
+  /challenges:
+    get:
+        summary: "Get all challenges"
+        responses:
+            200:
+                description: "Challenges found"
+                content:
+                    application/json:
+                        schema:
+                            type: "array"
+                            items:
+                                $ref: "#/components/schemas/Challenge"
+    post:
+        summary: "Create a new challenge"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  targetDate:
+                    type: string
+                    format: date
+                  status:
+                    type: string
+                    enum:
+                      - "draft"
+                      - "active"
+                required:
+                    - title
+                    - description
+                    - targetDate
+                    - status
+        responses:
+            201:
+                description: "Challenge created"
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Success"
+  /challenge_members:
+      post:
+        summary: "Join a challenge"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  challengeId:
+                    type: string
+                required:
+                    - challengeId
+        responses:
+            201:
+                description: "Challenge joined"
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/Success"
 
 components:
     schemas:
@@ -32,3 +125,34 @@ components:
           required:
             - id
             - name
+        Challenge:
+            type: "object"
+            properties:
+                id:
+                  type: "string"
+                name:
+                  type: "string"
+                description:
+                  type: "string"
+                targetDate:
+                  type: "string"
+                  format: "date"
+                status:
+                  type: "string"
+                  enum:
+                    - "draft"
+                    - "active"
+                    - "completed"
+            required:
+                - id
+                - name
+                - description
+                - targetDate
+                - status
+        Success:
+          type: "object"
+          properties:
+            success:
+              type: "boolean"
+          required:
+            - success

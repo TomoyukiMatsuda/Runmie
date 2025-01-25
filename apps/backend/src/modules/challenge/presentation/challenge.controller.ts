@@ -22,10 +22,6 @@ export class ChallengeController {
       description: string | null;
       targetDate: Date;
       status: ChallengeStatus;
-      members: {
-        userId: string;
-        role: string;
-      }[];
     }[]
   > {
     return this.getChallengesByUserIdUsecase.execute({ userId: user.id });

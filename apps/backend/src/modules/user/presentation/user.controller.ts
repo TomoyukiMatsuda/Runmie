@@ -14,6 +14,7 @@ import { UpdateUserUseCase } from '../usecase/update-user.usecase';
 import { GetUserUseCase } from '../usecase/get-user.usecase';
 import { AuthUserGuard } from '@/libs/auth/auth.user.guard';
 import { AuthUser, AuthUserType } from '@/libs/auth/user.decorator';
+import { ApiResponse } from '../../../../../../shared/types/apiConst';
 
 @Controller()
 export class UserController {
@@ -26,21 +27,22 @@ export class UserController {
   @Post('signup')
   async signup(
     @Headers('Authorization') authorization: string,
-  ): Promise<{ id: string; name: string }> {
+  ): Promise<ApiResponse<'/signup', 'post'>> {
     const [type, authToken] = authorization.split(' ');
 
     if (type !== 'Bearer' || !authToken) {
       throw new UnauthorizedException();
     }
 
-    return await this.createUserUseCase.execute(authToken);
+    await this.createUserUseCase.execute(authToken);
+    return { success: true };
   }
 
   @UseGuards(AuthUserGuard)
   @Get('me')
   async get(
     @AuthUser() user: AuthUserType,
-  ): Promise<{ id: string; name: string }> {
+  ): Promise<ApiResponse<'/me', 'get'>> {
     return await this.getUserUseCase.execute(user.id);
   }
 
@@ -49,9 +51,7 @@ export class UserController {
   async update(
     @AuthUser() user: AuthUserType,
     @Body() dto: UpdateUserDto,
-  ): Promise<{
-    success: boolean;
-  }> {
+  ): Promise<ApiResponse<'/me', 'patch'>> {
     await this.updateUserUseCase.execute(user.id, dto.name);
     return { success: true };
   }

@@ -4,6 +4,7 @@ import {
   ChallengeMemberRole,
 } from '@/modules/challenge/domain/challenge/entity/challenge-member.entity';
 
+// TODO: value objectに変更する
 export type ChallengeStatus = PrismaChallengeStatus;
 
 export class ChallengeEntity {
