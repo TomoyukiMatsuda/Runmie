@@ -3,8 +3,12 @@
   "version": "0.0.1",
   "description": "",
   "private": true,
-  "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*",
+    "shared/*"
+  ],
   "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "start:prod": "node dist/main",
     "dev:frontend": "workspace frontend dev",
@@ -12,7 +16,9 @@
     "migration": "workspace backend npx prisma migrate dev",
     "build": "workspaces run build",
     "lint": "workspaces run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "gen:api-schema": "npx openapi-typescript shared/openApi/api-schema.yaml --output shared/types/apiSchema.ts && npm run remove-never-type && prettier --write shared/types/apiSchema.ts",
+    "remove-never-type": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' shared/openApi/removeSchemaNeverType.ts"
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^8.19.0",
@@ -21,6 +27,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   }
 }
