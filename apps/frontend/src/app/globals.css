@@ -44,3 +44,17 @@ a {
     color-scheme: dark;
   }
 }
+
+/* animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-in-out;
+}
