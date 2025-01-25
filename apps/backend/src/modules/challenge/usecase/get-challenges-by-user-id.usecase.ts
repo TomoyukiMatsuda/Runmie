@@ -10,7 +10,7 @@ type Dto = {
   title: string;
   description: string | null;
   targetDate: Date;
-  status: ChallengeStatus;
+  status: 'draft' | 'active' | 'completed';
 }[];
 @Injectable()
 export class GetChallengesByUserIdUsecase {
@@ -19,14 +19,19 @@ export class GetChallengesByUserIdUsecase {
   async execute(params: { userId: string }): Promise<Dto> {
     return this.challengeRepository.findByUserId(params.userId).then(
       (challenges) =>
-        challenges.map((challenge) => ({
+        challenges.map((challenge) => {
           // TODO: id が undefined の場合の処理がしんどい
-          id: challenge.id ?? '',
-          title: challenge.title,
-          description: challenge.description,
-          targetDate: challenge.targetDate,
-          status: challenge.status,
-        })) satisfies Dto,
+          if (!challenge.id) {
+            throw new Error('Failed to get challenge');
+          }
+          return {
+            id: challenge.id,
+            title: challenge.title,
+            description: challenge.description,
+            targetDate: challenge.targetDate,
+            status: challenge.status,
+          };
+        }) satisfies Dto,
     );
   }
 }

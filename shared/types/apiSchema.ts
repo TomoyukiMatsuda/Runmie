@@ -7,130 +7,26 @@ export interface paths {
   '/signup': {
     parameters: {};
     /** Create a new user */
-    post: {
-      parameters: {};
-      responses: {
-        /** @description User created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Success'];
-          };
-        };
-      };
-    };
+    post: operations['post-signup'];
   };
   '/me': {
     parameters: {};
     /** Get current user */
-    get: {
-      parameters: {};
-      responses: {
-        /** @description User found */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['User'];
-          };
-        };
-      };
-    };
+    get: operations['get-me'];
     /** Update current user */
-    patch: {
-      parameters: {};
-      requestBody: {
-        content: {
-          'application/json': {
-            name: string;
-          };
-        };
-      };
-      responses: {
-        /** @description User updated */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Success'];
-          };
-        };
-      };
-    };
+    patch: operations['patch-me'];
   };
   '/challenges': {
     parameters: {};
     /** Get all challenges */
-    get: {
-      parameters: {};
-      responses: {
-        /** @description Challenges found */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Challenge'][];
-          };
-        };
-      };
-    };
+    get: operations['get-challenges'];
     /** Create a new challenge */
-    post: {
-      parameters: {};
-      requestBody: {
-        content: {
-          'application/json': {
-            title: string;
-            description: string;
-            /** Format: date */
-            targetDate: string;
-            /** @enum {string} */
-            status: 'draft' | 'active';
-          };
-        };
-      };
-      responses: {
-        /** @description Challenge created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Success'];
-          };
-        };
-      };
-    };
+    post: operations['post-challenges'];
   };
   '/challenge_members': {
     parameters: {};
     /** Join a challenge */
-    post: {
-      parameters: {};
-      requestBody: {
-        content: {
-          'application/json': {
-            challengeId: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Challenge joined */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['Success'];
-          };
-        };
-      };
-    };
+    post: operations['post-challenge-members'];
   };
 }
 export type webhooks = Record<string, never>;
@@ -142,8 +38,8 @@ export interface components {
     };
     Challenge: {
       id: string;
-      name: string;
-      description: string;
+      title?: string;
+      description: string | null;
       /** Format: date */
       targetDate: string;
       /** @enum {string} */
@@ -155,4 +51,115 @@ export interface components {
   };
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+  'post-signup': {
+    parameters: {};
+    responses: {
+      /** @description User created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Success'];
+        };
+      };
+    };
+  };
+  'get-me': {
+    parameters: {};
+    responses: {
+      /** @description User found */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['User'];
+        };
+      };
+    };
+  };
+  'patch-me': {
+    parameters: {};
+    requestBody: {
+      content: {
+        'application/json': {
+          name: string;
+        };
+      };
+    };
+    responses: {
+      /** @description User updated */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Success'];
+        };
+      };
+    };
+  };
+  'get-challenges': {
+    parameters: {};
+    responses: {
+      /** @description Challenges found */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Challenge'][];
+        };
+      };
+    };
+  };
+  'post-challenges': {
+    parameters: {};
+    requestBody: {
+      content: {
+        'application/json': {
+          title: string;
+          description: string;
+          /** Format: date */
+          targetDate: string;
+          /** @enum {string} */
+          status: 'draft' | 'active';
+        };
+      };
+    };
+    responses: {
+      /** @description Challenge created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Success'];
+        };
+      };
+    };
+  };
+  'post-challenge-members': {
+    parameters: {};
+    requestBody: {
+      content: {
+        'application/json': {
+          challengeId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Challenge joined */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Success'];
+        };
+      };
+    };
+  };
+}
