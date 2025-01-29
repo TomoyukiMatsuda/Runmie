@@ -121,7 +121,7 @@ export interface operations {
       content: {
         'application/json': {
           title: string;
-          description: string;
+          description: string | null;
           /** Format: date */
           targetDate: string;
           /** @enum {string} */
