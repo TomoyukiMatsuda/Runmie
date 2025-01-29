@@ -32,7 +32,7 @@ export function GoogleAuth() {
         onClick={handleGoogleLogin}
         className="rounded bg-white px-4 py-2 text-gray-800 shadow-md hover:bg-gray-100"
       >
-        Googleでログイン
+        Google でログイン
       </button>
     </div>
   );

@@ -1,11 +1,16 @@
 'use client';
 
 import { ArrowRight, Calendar, Plus, X } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { DialogPortal } from '@/components/DialogPortal';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useCustomSWRMutation } from '@/utils/useCustomSWRMutation';
+import { useCustomFetch } from '@/utils/customFetch';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import dayjs from 'dayjs';
 
 export const CreateChallenge = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -34,18 +39,64 @@ export const CreateChallenge = () => {
   );
 };
 
-const validate = zodResolver<ChallengeForm>(
-  z.object({
-    title: z.string().nonempty().max(50),
-    targetDate: z.date(),
-    description: z.string(),
-  }),
-);
 type ChallengeForm = {
   title: string;
   targetDate: Date | null;
   description: string | null;
 };
+// const resolver = (values: ChallengeForm) => {
+//   if (!values.title) {
+//     return {
+//       errors: {
+//         title: 'タイトルを入力してください',
+//       },
+//       values,
+//     };
+//   }
+//   if (values.title.length > 50) {
+//     return {
+//       errors: {
+//         title: 'タイトルは50文字以内で入力してください',
+//       },
+//       values,
+//     };
+//   }
+//   if (!values.targetDate) {
+//     return {
+//       errors: {
+//         targetDate: '目標日を入力してください',
+//       },
+//       values,
+//     };
+//   }
+//   if (values.targetDate < new Date()) {
+//     return {
+//       errors: {
+//         targetDate: '未来の日付を入力してください',
+//       },
+//       values,
+//     };
+//   }
+//   return {
+//     errors: {},
+//     values,
+//   };
+// };
+
+const validate = zodResolver(
+  z
+    .object({
+      title: z.string().nonempty().max(50),
+      targetDate: z.date().min(new Date()),
+      description: z.string().nullable(),
+    })
+    .transform((data) => ({
+      ...data,
+      targetDate: new Date(data.targetDate),
+    })),
+);
+const disabledButtonStyle = 'bg-gray-200 text-gray-500 cursor-not-allowed';
+const enabledButtonStyle = 'bg-orange-500 hover:bg-orange-600 cursor-pointer';
 type Props = {
   onClickClose: () => void;
 };
@@ -53,9 +104,8 @@ const CreateChallengeModal = ({ onClickClose }: Props) => {
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { isValid },
   } = useForm<ChallengeForm>({
-    mode: 'all',
     defaultValues: {
       title: '',
       targetDate: null,
@@ -63,6 +113,24 @@ const CreateChallengeModal = ({ onClickClose }: Props) => {
     },
     resolver: validate,
   });
+  const customFetch = useCustomFetch();
+  const onSubmit = useCallback(
+    async (data: ChallengeForm) => {
+      const result = await customFetch('POST', '/challenges', {
+        title: data.title,
+        targetDate: data.targetDate?.toDateString() ?? '',
+        description: data.description,
+        status: 'active',
+      });
+      if (result.success) {
+        onClickClose();
+        return;
+      }
+      // toast.show('alert', 'エラーが発生しました');
+      alert('エラーが発生しました');
+    },
+    [customFetch, onClickClose],
+  );
 
   return (
     <DialogPortal portalKey="create-challenge-modal" onClick={onClickClose}>
@@ -76,12 +144,7 @@ const CreateChallengeModal = ({ onClickClose }: Props) => {
             <X size={24} />
           </button>
         </div>
-        <form
-          onSubmit={handleSubmit((data) => {
-            console.log(data);
-          })}
-          className="p-4 space-y-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
           <Controller
             control={control}
             name="title"
@@ -98,7 +161,7 @@ const CreateChallengeModal = ({ onClickClose }: Props) => {
                   type="text"
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="例：東京マラソン2025"
+                  placeholder={`東京マラソン${dayjs().year()}`}
                   className="w-full p-2 border rounded focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
                 />
               </div>
@@ -115,19 +178,20 @@ const CreateChallengeModal = ({ onClickClose }: Props) => {
                 >
                   目標日
                 </label>
-                <div className="relative">
-                  <input
-                    id="targetDate"
-                    type="date"
-                    value={field.value?.toISOString().split('T')[0]}
-                    onChange={field.onChange}
-                    className="w-full p-2 border rounded focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-                  />
-                  <Calendar
-                    size={20}
-                    className="absolute right-2 top-2.5 text-gray-400"
-                  />
-                </div>
+                {/*https://reactdatepicker.com/*/}
+                <DatePicker
+                  id="targetDate"
+                  locale="ja"
+                  dateFormat="yyyy/MM/dd"
+                  dropdownMode="select"
+                  showDateSelect
+                  minDate={new Date()}
+                  selected={field.value}
+                  onChange={(date) => field.onChange(date)}
+                  placeholderText={dayjs().add(3, 'month').format('YYYY/MM/DD')}
+                  isClearable
+                  className="p-2 border rounded"
+                />
               </div>
             )}
           />
@@ -155,7 +219,9 @@ const CreateChallengeModal = ({ onClickClose }: Props) => {
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition-colors"
+              className={`w-full py-3 rounded-lg transition-colors text-white ${
+                isValid ? enabledButtonStyle : disabledButtonStyle
+              }`}
               disabled={!isValid}
             >
               作成する
