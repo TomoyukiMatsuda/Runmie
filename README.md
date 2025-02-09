@@ -1,25 +1,24 @@
 # Technical Stack
+- monorepo
+- docker
 
 ## Frontend
-
 - Next.js (App Router)
 - TypeScript
 - TailwindCSS
 - shadcn/ui (UIコンポーネント)
 - SWR (データフェッチング)
-- Supabase Client (認証・データ操作)
+- Supabase Authentication
 
-## Backend / Database / Infrastructure
+## Backend
+- TypeScript
+- Nest.js
+- Supabase Authentication
+- PostgreSQL
+- Prisma
+- 軽量DDD設計
 
-- Supabase
-  - PostgreSQL Database
-  - Authentication
-  - Storage (画像アップロード)
-  - Row Level Security (RLS)
-  - Edge Functions (必要に応じて)
-
-## Hosting
-
+## Hosting（予定）
 - Vercel (Frontend)
 - Supabase (Backend / DB)
 
