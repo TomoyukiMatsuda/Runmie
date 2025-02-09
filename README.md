@@ -1,5 +1,5 @@
 # Technical Stack
-- monorepo
+- monorepo 開発
 - docker
 
 ## Frontend
@@ -16,6 +16,7 @@
 - Supabase Authentication
 - PostgreSQL
 - Prisma
+- REST API
 - 軽量DDD設計
 
 ## Hosting（予定）
