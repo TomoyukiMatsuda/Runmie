@@ -42,10 +42,11 @@ model Challenge {
   targetDate  DateTime        @map("target_date") @db.Date
   status      ChallengeStatus @default(active)
 
-  members          ChallengeMember[]
-  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp
-  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamp
-  challengeProcess ChallengeProcess?
+  members             ChallengeMember[]
+  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamp
+  updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamp
+  challengeProcess    ChallengeProcess?
+  challengeInviteCode ChallengeInviteCode[]
 
   @@map("challenges")
 }
@@ -82,6 +83,16 @@ model ChallengeMember {
 
   @@id([userId, challengeId])
   @@map("challenge_members")
+}
+
+model ChallengeInviteCode {
+  code        String    @id @db.Char(8)
+  challengeId String    @map("challenge_id") @db.Char(25)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+
+  @@map("challenge_invite_codes")
 }
 
 model ChallengeProcessActivity {

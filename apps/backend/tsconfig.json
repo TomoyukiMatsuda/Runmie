@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    // バックエンド固有のモジュール設定
-    "module": "commonjs",
-    "lib": ["ES2021"],
+    "module": "esnext",
+//    "module": "commonjs",
+    "lib": ["esnext"],
     "moduleResolution": "node",
 
     // 追加の厳格な型チェック
