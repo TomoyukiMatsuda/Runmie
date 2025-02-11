@@ -15,6 +15,7 @@ export class ChallengeMemberController {
     private readonly getChallengeInviteCodeUsecase: GetChallengeInviteCodeUsecase,
   ) {}
 
+  // todo api schema
   @Post()
   async add(
     @AuthUser() user: AuthUserType,
