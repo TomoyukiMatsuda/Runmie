@@ -25,7 +25,8 @@
     "removeComments": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@shared/*": ["../../shared/*"]
     },
 
     // その他のバックエンド固有設定

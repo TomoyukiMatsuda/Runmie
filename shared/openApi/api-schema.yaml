@@ -108,10 +108,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  challengeId:
+                  inviteCode:
                     type: string
                 required:
-                    - challengeId
+                    - inviteCode
         responses:
             201:
                 description: "Challenge joined"
@@ -119,6 +119,58 @@ paths:
                     application/json:
                         schema:
                             $ref: "#/components/schemas/Success"
+  /challenge_members/invite_code:
+      post:
+        operationId: post-challenge-members-invite-code
+        summary: "Create an invite code for a challenge"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  challengeId:
+                    type: string
+                required:
+                    - challengeId
+        responses:
+            201:
+                description: "Invite code created"
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                              code:
+                                type: string
+                            required:
+                                - code
+      get:
+        operationId: get-challenge-members-invite-code
+        summary: "Get invite code for a challenge"
+        parameters:
+          - name: challengeId
+            in: query
+            required: true
+            schema:
+              type: string
+            description: "Challenge ID to get invite code for"
+        responses:
+            200:
+                description: "Invite code retrieved"
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                              code:
+                                type: string
+                              isValid:
+                                type: boolean
+                            required:
+                                - code
+                                - isValid
 
 components:
     schemas:

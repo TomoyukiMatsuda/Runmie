@@ -1,10 +1,15 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthUserGuard } from '@/libs/auth/auth.user.guard';
 import { AuthUser, AuthUserType } from '@/libs/auth/user.decorator';
-import { ChallengeMemberAddDto } from '@/modules/challenge/presentation/challenge-member.dto';
+import { ApiResponse } from '@shared/types/apiConst';
 import { AddChallengeMemberUsecase } from '@/modules/challenge/usecase/add-challenge-member.usecase';
 import { CreateChallengeInviteCodeUsecase } from '../usecase/create-challenge-invite-code.usecase';
 import { GetChallengeInviteCodeUsecase } from '@/modules/challenge/usecase/get-challenge-invite-code.usecase';
+import {
+  ChallengeMemberAddDto,
+  ChallengeInviteCodeCreateDto,
+  ChallengeInviteCodeGetDto,
+} from './challenge-member.dto';
 
 @UseGuards(AuthUserGuard)
 @Controller('/challenge_members')
@@ -15,12 +20,11 @@ export class ChallengeMemberController {
     private readonly getChallengeInviteCodeUsecase: GetChallengeInviteCodeUsecase,
   ) {}
 
-  // todo api schema
   @Post()
   async add(
     @AuthUser() user: AuthUserType,
     @Body() dto: ChallengeMemberAddDto,
-  ): Promise<{ success: boolean }> {
+  ): Promise<ApiResponse<'/challenge_members', 'post'>> {
     await this.addChallengeMemberUsecase.execute({
       userId: user.id,
       inviteCode: dto.inviteCode,
@@ -32,8 +36,8 @@ export class ChallengeMemberController {
   @Post('/invite_code')
   async createInviteCode(
     @AuthUser() user: AuthUserType,
-    @Body() dto: { challengeId: string },
-  ): Promise<{ code: string }> {
+    @Body() dto: ChallengeInviteCodeCreateDto,
+  ): Promise<ApiResponse<'/challenge_members/invite_code', 'post'>> {
     const inviteCode = await this.createChallengeInviteCodeUsecase.execute({
       userId: user.id,
       challengeId: dto.challengeId,
@@ -43,10 +47,10 @@ export class ChallengeMemberController {
   }
 
   @Get('/invite_code')
-  getInviteCode(
+  async getInviteCode(
     @AuthUser() user: AuthUserType,
-    @Body() dto: { challengeId: string },
-  ): Promise<{ code: string; isValid: boolean }> {
+    @Query() dto: ChallengeInviteCodeGetDto,
+  ): Promise<ApiResponse<'/challenge_members/invite_code', 'get'>> {
     return this.getChallengeInviteCodeUsecase.execute({
       userId: user.id,
       challengeId: dto.challengeId,

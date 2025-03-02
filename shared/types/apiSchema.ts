@@ -28,6 +28,13 @@ export interface paths {
     /** Join a challenge */
     post: operations['post-challenge-members'];
   };
+  '/challenge_members/invite_code': {
+    parameters: {};
+    /** Get invite code for a challenge */
+    get: operations['get-challenge-members-invite-code'];
+    /** Create an invite code for a challenge */
+    post: operations['post-challenge-members-invite-code'];
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -146,7 +153,7 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': {
-          challengeId: string;
+          inviteCode: string;
         };
       };
     };
@@ -158,6 +165,51 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Success'];
+        };
+      };
+    };
+  };
+  'get-challenge-members-invite-code': {
+    parameters: {
+      query: {
+        /** @description Challenge ID to get invite code for */
+        challengeId: string;
+      };
+    };
+    responses: {
+      /** @description Invite code retrieved */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+            isValid: boolean;
+          };
+        };
+      };
+    };
+  };
+  'post-challenge-members-invite-code': {
+    parameters: {};
+    requestBody: {
+      content: {
+        'application/json': {
+          challengeId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Invite code created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            code: string;
+          };
         };
       };
     };
