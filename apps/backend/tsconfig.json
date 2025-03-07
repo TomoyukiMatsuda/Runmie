@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "esnext",
-//    "module": "commonjs",
+    "module": "commonjs",
     "lib": ["esnext"],
     "moduleResolution": "node",
 

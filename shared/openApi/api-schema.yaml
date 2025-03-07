@@ -80,6 +80,7 @@ paths:
                   targetDate:
                     type: string
                     format: date
+                    description: "Challenge target date in YYYY-MM-DD format"
                   status:
                     type: string
                     enum:

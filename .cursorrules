@@ -47,7 +47,13 @@ TypeScript、Node.js、Nest.js、Prisma、PostgreSQL、Supabase、Next.js、Reac
 ## 主要な原則
 - 軽量DDDに則る（オーバーエンジニアリングになりすぎないように注意）
 - 最新の Nest.js で推奨されている設計やコーディング、実装方法を適用する
+
+## 各 module の presentation 層における原則
 - API のリクエスト・レスポンスは shared/openApi/api-schema.yaml から生成された shared/types/apiSchema.ts の型定義を利用する
+- API のリクエストを定義する際は {適切な命名}-.dto.ts file を作成する
+- {適切な命名}-.dto.ts file は controller に対して1対1の関係とする
+- {適切な命名}-.dto.ts file のコードは apps/backend/src/modules/challenge/presentation/challenge-member.dto.ts と apps/backend/src/modules/challenge/presentation/challenge-member.controller.ts を参考にしてください
+- shared/types/apiSchema.ts で値が format-date 型 で定義されているものは string で受け取って controller 側では Date 型として扱えるようにしてください（参考: apps/backend/src/modules/challenge/presentation/challenge.dto.ts)
 
 # frontend ディレクトリにおける原則
 ## 主要な原則
